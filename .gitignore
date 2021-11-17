@@ -1,0 +1,5 @@
+*.txt
+*.log
+demo_output.json
+__pycache__
+venv
