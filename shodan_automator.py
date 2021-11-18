@@ -75,7 +75,7 @@ class ShodanHostResult:
         self._hostnames = hostnames
 
     def __repr__(self) -> str:
-        return f"Shodan host result - IP: {self.ip}; Ports: {self.ports}; Hostnames: {self.hostnames}\n"
+        return f"Shodan host result - IP: {self.ip}; Ports: {self.ports}; Hostnames: {self.hostnames}"
 
 
 class ShodanScanner:
@@ -114,11 +114,10 @@ class ShodanScanner:
             try:
                 result = api.host(h)
             except APIError as error_message:
-                rootLogger.error(error_message)
+                rootLogger.error(f"API error occured for {h}, reason: {error_message}")
+                continue
 
             ports = []
-            if result is None:
-                raise TypeError("No data retured in query!")
             for data_item in result['data']:
                 p = {"portnumber": data_item['port'], "transport": data_item['transport']}
                 ports.append(p)
