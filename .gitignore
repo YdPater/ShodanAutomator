@@ -4,3 +4,4 @@ demo_output.json
 __pycache__
 venv/
 .vscode
+.DS_Store
