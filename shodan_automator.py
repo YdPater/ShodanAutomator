@@ -3,7 +3,7 @@ from shodan.exception import APIError
 from argparse import ArgumentParser
 import logging
 
-__version__ = 0.1
+__version__ = 0.2
 
 banner = f'''
    _____ __              __            ___         __                        __            
@@ -135,6 +135,24 @@ class ShodanScanner:
 
         return shodan_hosts
 
+    def write_to_output_file(self, results: list, filename: str) -> None:
+        if not isinstance(results, list):
+            raise ValueError(
+                "Input results must be of list type, containing ShodanHostResults instances."
+            )
+        if not isinstance(results[0], ShodanHostResult):
+            raise ValueError(
+                "Input results must be of list type, containing ShodanHostResults instances."
+            )
+
+        try:
+            with open(filename, "a") as outfile:
+                for result in results:
+                    values = list(result.__dict__.values())
+                    outfile.write(str(values) + "\n")
+        except PermissionError as e:
+            rootLogger.error(f"Writing to output file is not allowed: {e}")
+
 
 if __name__ == "__main__":
     print(banner)
@@ -149,6 +167,10 @@ if __name__ == "__main__":
     parser.add_argument("--host-file",
                         type=str,
                         help="Input a file with hosts. Each on a new line.")
+    parser.add_argument("--output",
+                        "-o",
+                        help="Specify an output file to write the results to.",
+                        type=str)
     parser.add_argument("--verbose",
                         "-v",
                         action="store_true",
@@ -175,6 +197,9 @@ if __name__ == "__main__":
     scanner = ShodanScanner(api_key=args.API_KEY, hosts=_hosts)
     rootLogger.info("Scanner configured! Staring scan...")
     output = scanner.scan_hosts()
+
+    if args.output:
+        scanner.write_to_output_file(output, "test.txt")
     for r in output:
         rootLogger.info(f"[*] - {r}")
     rootLogger.info("Scanner finished.")
