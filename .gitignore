@@ -1,4 +1,3 @@
-*.txt
 *.log
 demo_output.json
 __pycache__
